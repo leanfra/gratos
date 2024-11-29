@@ -63,7 +63,9 @@ func run(_ *cobra.Command, args []string) {
 			}
 		}),
 		proto.WithService(func(s *proto.Service) {
+			project := strings.Split(pkg, "/")[0]
 			cs := &Service{
+				Project: project,
 				Package: pkg,
 				Service: serviceName(s.Name),
 			}
