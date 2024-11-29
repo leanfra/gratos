@@ -1,3 +1,5 @@
+### Clone from Kratos. But Add some features needed by me
+
 <p align="center"><a href="https://go-kratos.dev/" target="_blank"><img src="https://github.com/go-kratos/kratos/blob/main/docs/images/kratos-large.png?raw=true"></a></p>
 
 <p align="center">
