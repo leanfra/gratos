@@ -22,6 +22,7 @@ var CmdServer = &cobra.Command{
 }
 var targetDir string
 var bizDir string
+var dataDir string
 var modelFile string
 var modelComment string
 var overWrite bool
@@ -29,6 +30,7 @@ var overWrite bool
 func init() {
 	CmdServer.Flags().StringVarP(&targetDir, "service-dir", "t", "internal/service", "generated service directory. one file per service")
 	CmdServer.Flags().StringVarP(&bizDir, "biz-dir", "b", "internal/biz", "generated biz directory. one file per service")
+	CmdServer.Flags().StringVarP(&dataDir, "data-dir", "d", "internal/data", "generated data directory. one file per service")
 	CmdServer.Flags().StringVarP(&modelFile, "model-file", "m", "models.go", "generated model file under biz directory")
 	CmdServer.Flags().StringVarP(&modelComment, "model-comment", "c", "gratos::model", "comment tag to message converted to model")
 	CmdServer.Flags().BoolVarP(&overWrite, "over-write", "f", false, "force over write existed file")
@@ -63,7 +65,9 @@ func run(_ *cobra.Command, args []string) {
 			}
 		}),
 		proto.WithService(func(s *proto.Service) {
+			project := strings.Split(pkg, "/")[0]
 			cs := &Service{
+				Project: project,
 				Package: pkg,
 				Service: serviceName(s.Name),
 			}
@@ -146,6 +150,15 @@ func run(_ *cobra.Command, args []string) {
 			fmt.Printf("generate: %s\n", to)
 		}
 
+		// data
+		b, err = s.executeData()
+		if err != nil {
+			log.Fatal(err)
+		}
+		to = filepath.Join(dataDir, strings.ToLower(s.Service)+".go")
+		if e := writeFile(to, b); e == nil {
+			fmt.Printf("generate: %s\n", to)
+		}
 	}
 }
 

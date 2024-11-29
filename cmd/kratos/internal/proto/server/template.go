@@ -22,20 +22,31 @@ import (
 	{{- if .GoogleEmpty }}
 	"google.golang.org/protobuf/types/known/emptypb"
 	{{- end }}
+
+	//  TODO: modify project name
+	biz "{{ .Project }}/internal/biz"
 )
 
 type {{ .Service }}Service struct {
 	pb.Unimplemented{{ .Service }}Server
+	usecase biz.{{ .Service }}Usecase
 }
 
-func New{{ .Service }}Service() *{{ .Service }}Service {
-	return &{{ .Service }}Service{}
+func New{{ .Service }}Service(uc biz.{{ .Service }}Usecase) *{{ .Service }}Service {
+	return &{{ .Service }}Service{
+		usecase : uc,
+	}
 }
 
 {{- $s1 := "google.protobuf.Empty" }}
 {{ range .Methods }}
 {{- if eq .Type 1 }}
 func (s *{{ .Service }}Service) {{ .Name }}(ctx context.Context, req {{ if eq .Request $s1 }}*emptypb.Empty{{ else }}*pb.{{ .Request }}{{ end }}) ({{ if eq .Reply $s1 }}*emptypb.Empty{{ else }}*pb.{{ .Reply }}{{ end }}, error) {
+	// TODO: convert req to biz request
+	s.usecase.{{ .Name }}(ctx)
+
+	// TODO: convert biz reponse to reply
+
 	return {{ if eq .Reply $s1 }}&emptypb.Empty{}{{ else }}&pb.{{ .Reply }}{}{{ end }}, nil
 }
 
@@ -49,7 +60,7 @@ func (s *{{ .Service }}Service) {{ .Name }}(conn pb.{{ .Service }}_{{ .Name }}Se
 		if err != nil {
 			return err
 		}
-		
+
 		err = conn.Send(&pb.{{ .Reply }}{})
 		if err != nil {
 			return err
@@ -96,6 +107,7 @@ const (
 
 // Service is a proto service.
 type Service struct {
+	Project     string
 	Package     string
 	Service     string
 	Methods     []*Method
