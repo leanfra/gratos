@@ -30,6 +30,7 @@ type {{ $m.Name}} struct {
 	{{ $f.Name }} {{ if $f.Repeated }} []{{ end }}{{ $f.Type }}
 	{{- end }} 
 }
+
 {{- end }}
 
 `

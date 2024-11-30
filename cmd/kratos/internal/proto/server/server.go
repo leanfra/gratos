@@ -105,7 +105,7 @@ func run(_ *cobra.Command, args []string) {
 					if ok {
 						//fmt.Println(nf.Name, nf.Type)
 						_model.Fields = append(_model.Fields, Field{
-							Name:     nf.Name,
+							Name:     fieldName(nf.Name),
 							Type:     nf.Type,
 							Repeated: nf.Repeated,
 						})
@@ -168,7 +168,7 @@ func writeFile(to string, data []byte) error {
 			fmt.Printf("over write: %s\n", to)
 		} else {
 			fmt.Fprintf(os.Stderr, "already exists: %s\n", to)
-			return fmt.Errorf("file already exists: %s\n", to)
+			return fmt.Errorf("file already exists: %s", to)
 		}
 	}
 	if err := os.WriteFile(to, data, 0o644); err != nil {
@@ -196,6 +196,10 @@ func parametersName(name string) string {
 }
 
 func serviceName(name string) string {
+	return toUpperCamelCase(strings.Split(name, ".")[0])
+}
+
+func fieldName(name string) string {
 	return toUpperCamelCase(strings.Split(name, ".")[0])
 }
 
