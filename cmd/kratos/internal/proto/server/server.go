@@ -89,11 +89,11 @@ func run(_ *cobra.Command, args []string) {
 			if m.Comment != nil {
 				comments := m.Comment.Lines
 				for _, c := range comments {
-					if strings.Index(c, modelComment) >= 0 {
+					if strings.Contains(c, modelComment) {
 						is_model = true
 					}
 				}
-				if is_model == false {
+				if !is_model {
 					return
 				}
 				// valid module
