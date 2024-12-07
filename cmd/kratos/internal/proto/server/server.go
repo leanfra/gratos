@@ -89,11 +89,11 @@ func run(_ *cobra.Command, args []string) {
 			if m.Comment != nil {
 				comments := m.Comment.Lines
 				for _, c := range comments {
-					if strings.Index(c, modelComment) >= 0 {
+					if strings.Contains(c, modelComment) {
 						is_model = true
 					}
 				}
-				if is_model == false {
+				if !is_model {
 					return
 				}
 				// valid module
@@ -164,7 +164,7 @@ func run(_ *cobra.Command, args []string) {
 
 func writeFile(to string, data []byte) error {
 	if _, err := os.Stat(to); !os.IsNotExist(err) {
-		if overWrite == true {
+		if overWrite {
 			fmt.Printf("over write: %s\n", to)
 		} else {
 			fmt.Fprintf(os.Stderr, "already exists: %s\n", to)
