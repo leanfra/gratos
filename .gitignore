@@ -40,3 +40,9 @@ bin/
 
 # token file
 *.token
+
+# binary file
+cmd/kratos/kratos
+cmd/protoc-gen-go-errors/protoc-gen-go-errors
+cmd/protoc-gen-go-http/protoc-gen-go-http
+
