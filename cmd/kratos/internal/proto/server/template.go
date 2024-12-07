@@ -23,6 +23,8 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	{{- end }}
 
+	"github.com/go-kratos/kratos/v2/log"
+
 	//  TODO: modify project name
 	biz "{{ .Project }}/internal/biz"
 )
@@ -30,11 +32,13 @@ import (
 type {{ .Service }}Service struct {
 	pb.Unimplemented{{ .Service }}Server
 	usecase biz.{{ .Service }}Usecase
+	log *log.Helper
 }
 
-func New{{ .Service }}Service(uc biz.{{ .Service }}Usecase) *{{ .Service }}Service {
+func New{{ .Service }}Service(uc biz.{{ .Service }}Usecase, logger log.Logger) *{{ .Service }}Service {
 	return &{{ .Service }}Service{
 		usecase : uc,
+		log:	  log.NewHelper(logger),
 	}
 }
 
