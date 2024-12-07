@@ -164,7 +164,7 @@ func run(_ *cobra.Command, args []string) {
 
 func writeFile(to string, data []byte) error {
 	if _, err := os.Stat(to); !os.IsNotExist(err) {
-		if overWrite == true {
+		if overWrite {
 			fmt.Printf("over write: %s\n", to)
 		} else {
 			fmt.Fprintf(os.Stderr, "already exists: %s\n", to)
