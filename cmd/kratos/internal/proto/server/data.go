@@ -25,7 +25,7 @@ type {{ .Service }}RepoImpl struct {
 	log *log.Helper
 }
 
-func New{{ .Service }}RepoImpl(data *Data, logger log.Logger) (*{{ .Service }}RepoImpl, error) {
+func New{{ .Service }}RepoImpl(data *Data, logger log.Logger) (biz.{{ .Service }}Repo, error) {
 
 	return &{{ .Service }}RepoImpl{
 		data: data,
