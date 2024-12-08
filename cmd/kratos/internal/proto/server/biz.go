@@ -27,11 +27,13 @@ type {{ .Service }}Repo interface {
 
 type {{ .Service }}Usecase struct {
 	repo {{ .Service }}Repo	
+	log *log.Helper
 }
 
-func New{{ .Service }}Usecase(repo {{ .Service }}Repo) *{{ .Service }}Usecase {
+func New{{ .Service }}Usecase(repo {{ .Service }}Repo, logger log.Logger) *{{ .Service }}Usecase {
 	return &{{ .Service }}Usecase{
 		repo: repo,
+		log:	  log.NewHelper(logger),
 	}
 }
 
