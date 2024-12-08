@@ -22,12 +22,14 @@ import (
 
 type {{ .Service }}RepoImpl struct {
 	data *Data
+	log *log.Helper
 }
 
-func New{{ .Service }}RepoImpl(data *Data) (*{{ .Service }}RepoImpl, error) {
+func New{{ .Service }}RepoImpl(data *Data, logger log.Logger) (*{{ .Service }}RepoImpl, error) {
 
 	return &{{ .Service }}RepoImpl{
 		data: data,
+		log:	  log.NewHelper(logger),
 	}, nil
 }
 
