@@ -25,6 +25,7 @@ var modelTemplate = `
 package biz
 
 {{ range $m := .Models}}
+
 type {{ $m.Name}} struct {
 	{{- range $f := $m.Fields }}
 	{{ $f.Name }} {{ if $f.Repeated }} []{{ end }}{{ $f.Type }}
