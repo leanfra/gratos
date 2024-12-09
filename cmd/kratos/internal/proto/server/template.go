@@ -31,11 +31,11 @@ import (
 
 type {{ .Service }}Service struct {
 	pb.Unimplemented{{ .Service }}Server
-	usecase biz.{{ .Service }}Usecase
+	usecase *biz.{{ .Service }}Usecase
 	log *log.Helper
 }
 
-func New{{ .Service }}Service(uc biz.{{ .Service }}Usecase, logger log.Logger) *{{ .Service }}Service {
+func New{{ .Service }}Service(uc *biz.{{ .Service }}Usecase, logger log.Logger) *{{ .Service }}Service {
 	return &{{ .Service }}Service{
 		usecase : uc,
 		log:	  log.NewHelper(logger),
