@@ -32,6 +32,10 @@ type {{ $m.Name}} struct {
 	{{- end }} 
 }
 
+func (m *{{ $m.Name}}) Validate() error {
+	return nil
+}
+
 {{- end }}
 
 `
