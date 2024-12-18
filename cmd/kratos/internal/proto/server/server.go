@@ -26,6 +26,10 @@ var dataDir string
 var modelFile string
 var modelComment string
 var overWrite bool
+var nobiz bool
+var nobizmodel bool
+var noservice bool
+var nodata bool
 
 func init() {
 	CmdServer.Flags().StringVarP(&targetDir, "service-dir", "t", "internal/service", "generated service directory. one file per service")
@@ -34,6 +38,10 @@ func init() {
 	CmdServer.Flags().StringVarP(&modelFile, "model-file", "m", "models.go", "generated model file under biz directory")
 	CmdServer.Flags().StringVarP(&modelComment, "model-comment", "c", "gratos::model", "comment tag to message converted to model")
 	CmdServer.Flags().BoolVarP(&overWrite, "over-write", "f", false, "force over write existed file")
+	CmdServer.Flags().BoolVarP(&nobiz, "no-biz", "", false, "not generate biz code")
+	CmdServer.Flags().BoolVarP(&nobizmodel, "no-biz-model", "", false, "not generate biz model code")
+	CmdServer.Flags().BoolVarP(&noservice, "no-service", "", false, "not generate service code")
+	CmdServer.Flags().BoolVarP(&nodata, "no-data", "", false, "not generate data code")
 }
 
 func run(_ *cobra.Command, args []string) {
@@ -54,8 +62,8 @@ func run(_ *cobra.Command, args []string) {
 	}
 
 	var (
-		pkg string
-		res []*Service
+		pkg      string
+		services []*Service
 	)
 	models := Models{}
 	proto.Walk(definition,
@@ -81,7 +89,7 @@ func run(_ *cobra.Command, args []string) {
 					Reply: parametersName(r.ReturnsType), Type: getMethodType(r.StreamsRequest, r.StreamsReturns),
 				})
 			}
-			res = append(res, cs)
+			services = append(services, cs)
 		}),
 		proto.WithMessage(func(m *proto.Message) {
 			//fmt.Println(m.Name, m.Comment)
@@ -120,44 +128,53 @@ func run(_ *cobra.Command, args []string) {
 		return
 	}
 	//fmt.Println(models)
-	model_to := filepath.Join(targetDir, "../biz", modelFile)
-	b, err := models.execute()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if e := writeFile(model_to, b); e == nil {
-		fmt.Printf("generate: %s\n", model_to)
-	}
-
-	for _, s := range res {
-		to := filepath.Join(targetDir, strings.ToLower(s.Service)+".go")
-
-		b, err := s.execute()
+	if !nobizmodel {
+		model_to := filepath.Join(targetDir, "../biz", modelFile)
+		biz_model_bytes, err := models.execute()
 		if err != nil {
 			log.Fatal(err)
 		}
-		if e := writeFile(to, b); e == nil {
-			fmt.Printf("generate: %s\n", to)
+		if e := writeFile(model_to, biz_model_bytes); e == nil {
+			fmt.Printf("generate: %s\n", model_to)
+		}
+	}
+
+	for _, s := range services {
+
+		// service
+		if !noservice {
+			svc_file := filepath.Join(targetDir, strings.ToLower(s.Service)+".go")
+			svc_bytes, err := s.execute()
+			if err != nil {
+				log.Fatal(err)
+			}
+			if e := writeFile(svc_file, svc_bytes); e == nil {
+				fmt.Printf("generate: %s\n", svc_file)
+			}
 		}
 
 		// biz
-		b, err = s.executeBiz()
-		if err != nil {
-			log.Fatal(err)
-		}
-		to = filepath.Join(bizDir, strings.ToLower(s.Service)+".go")
-		if e := writeFile(to, b); e == nil {
-			fmt.Printf("generate: %s\n", to)
+		if !nobiz {
+			biz_bytes, err := s.executeBiz()
+			if err != nil {
+				log.Fatal(err)
+			}
+			biz_file := filepath.Join(bizDir, strings.ToLower(s.Service)+".go")
+			if e := writeFile(biz_file, biz_bytes); e == nil {
+				fmt.Printf("generate: %s\n", biz_file)
+			}
 		}
 
 		// data
-		b, err = s.executeData()
-		if err != nil {
-			log.Fatal(err)
-		}
-		to = filepath.Join(dataDir, strings.ToLower(s.Service)+".go")
-		if e := writeFile(to, b); e == nil {
-			fmt.Printf("generate: %s\n", to)
+		if !nodata {
+			data_bytes, err := s.executeData()
+			if err != nil {
+				log.Fatal(err)
+			}
+			data_file := filepath.Join(dataDir, strings.ToLower(s.Service)+".go")
+			if e := writeFile(data_file, data_bytes); e == nil {
+				fmt.Printf("generate: %s\n", data_file)
+			}
 		}
 	}
 }
